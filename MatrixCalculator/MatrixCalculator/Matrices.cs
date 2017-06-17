@@ -26,11 +26,24 @@ namespace MatrxCalculator
 		}
 		public void GetValues()
 		{
+            this.rows = this.values.Count;
+            this.columns = 0; 
 			// get number of rows 
 			// get number of columns 
 			// check if they are equal, is the matrix square? 
 			// make sure each list of integers in list of integers has an equal length, is the matrix valid?
 		}
+        public void Display()
+        {
+            Console.WriteLine("Number of rows: {0}\n Number of columns: {1}", this.rows, this.columns); 
+            values.ForEach(rows => {
+                rows.ForEach(value =>
+                {
+                    Console.WriteLine("{0}\t", value);
+                });
+                Console.WriteLine("\n");                 
+            });
+        }
 	}
 	public class Functions
 	{
@@ -39,8 +52,9 @@ namespace MatrxCalculator
 
 		public Matrix Transpose(bool leftMatrixToTranspose)
 		{
-			var matrix = leftMatrixToTranspose ? leftMatrix : rightMatrix;
+			var matrix = leftMatrixToTranspose ? this.leftMatrix : this.rightMatrix;
 			var transposedMatrix = new Matrix(matrix.columns, matrix.rows);
+
 			for (int i = 0; i < matrix.rows; ++i)
 			{
 				for (int j = 0; j < matrix.columns; ++j)
@@ -53,17 +67,36 @@ namespace MatrxCalculator
 		}
 		public Matrix Add()
 		{
-			// check requirements 
-			var addedMatrix = new Matrix(leftMatrix.rows, leftMatrix.columns);
-			// do stuff 
+			// check requirements
+
+			var addedMatrix = new Matrix(this.leftMatrix.rows, this.leftMatrix.columns);
+            for (int i = 0; i < this.leftMatrix.rows; ++i) 
+            {
+                var currentRow = new List<int>();  
+                for (int j = 0; j < this.leftMatrix.columns; ++j)
+                {
+                    currentRow.Add(this.leftMatrix.values[i][j] + this.rightMatrix.values[i][j]); 
+                }
+                addedMatrix.values.Add(currentRow); 
+            }
+
 			return addedMatrix;
 
 		}
 		public Matrix Subract()
 		{
 			// check requirements 
-			var subractedMatrix = new Matrix(leftMatrix.rows, leftMatrix.columns);
-			// do stuff 
+
+			var subractedMatrix = new Matrix(this.leftMatrix.rows, this.leftMatrix.columns);
+			for (int i = 0; i < subractedMatrix.rows; ++i)
+			{
+				var currentRow = new List<int>();
+				for (int j = 0; j < subractedMatrix.columns; ++j)
+				{
+					currentRow.Add(this.leftMatrix.values[i][j] - this.rightMatrix.values[i][j]);
+				}
+				subractedMatrix.values.Add(currentRow);
+			}
 			return subractedMatrix;
 		}
 		public Matrix Multiply()
