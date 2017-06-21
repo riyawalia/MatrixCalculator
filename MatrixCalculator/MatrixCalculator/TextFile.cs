@@ -7,11 +7,11 @@ namespace MatrixCalculator
 {
 	public class TextFile
 	{
-		public Functions functions;
+        protected Calculator _calculator; 
+        public Calculator calculator { get { return _calculator ?? (_calculator = new Calculator());  } set { _calculator = value;  }}
         public string fileDirectory; 
-        public string filePath = null;
-        public List<string> rawText; 
-        // file path is saved in app config, user can select while file to use 
+        public string filePath { get; set; }
+        // file path is saved in app config, user can select which file to use 
         protected bool EnterFileName()
         {
 			Console.WriteLine("Enter file name:");
@@ -26,6 +26,7 @@ namespace MatrixCalculator
 		}
 		public TextFile()
 		{
+            var rawText = new List<string>(); 
             this.fileDirectory = ConfigurationManager.AppSettings["fileDirectory"];
             string[] matrixSeperator = { "" }; 
             if (!Directory.Exists(fileDirectory))
@@ -44,13 +45,28 @@ namespace MatrixCalculator
 			}
             foreach (string line in File.ReadLines(this.filePath))
             {
-                this.rawText.Add(line); 
+                rawText.Add(line); 
             }
 
-            this.functions.leftMatrix.SetValues(this.rawText[0]);
-            this.functions.rightMatrix.SetValues(this.rawText[1]); 
+            this.calculator.leftMatrix.SetValues(rawText[0]);
+            this.calculator.rightMatrix.SetValues(rawText[1]); 
              
 			// prepare for error if format of text file is unexpected
 		}
+
+        public void WriteResult(string operation)
+        {
+            StreamWriter resultFile = File.AppendText("..\\Text Files\\result.txt");
+
+            string resultMessage = this.calculator.leftMatrix.ToString() + operation + this.calculator.rightMatrix.ToString() + " = " + this.calculator.resultMatrix.ToString(); 
+
+            resultFile.WriteLine(resultMessage);
+        }
+        public void WriteResult()
+        {
+            StreamWriter resultFile = File.AppendText("..\\Flat Files\\result.txt");
+
+            resultFile.WriteLine(this.calculator.resultMatrix.ToString()); 
+        }
 	}
 }
