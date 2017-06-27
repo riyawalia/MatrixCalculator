@@ -54,11 +54,11 @@ namespace MatrixCalculator
 			// prepare for error if format of text file is unexpected
 		}
 
-        public void WriteResult(string operation)
+        public void WriteResult(char operation)
         {
             StreamWriter resultFile = File.AppendText("..\\Text Files\\result.txt");
 
-            string resultMessage = this.calculator.leftMatrix.ToString() + operation + this.calculator.rightMatrix.ToString() + " = " + this.calculator.resultMatrix.ToString(); 
+            string resultMessage = "---\n" + this.calculator.leftMatrix.ToString() + '\n' + operation + '\n' + this.calculator.rightMatrix.ToString() + "\n=\n" + this.calculator.resultMatrix.ToString() + '\n'; 
 
             resultFile.WriteLine(resultMessage);
         }
@@ -66,7 +66,7 @@ namespace MatrixCalculator
         {
             StreamWriter resultFile = File.AppendText("..\\Flat Files\\result.txt");
 
-            resultFile.WriteLine(this.calculator.resultMatrix.ToString()); 
+            resultFile.WriteLine("---\n" + this.calculator.resultMatrix.ToString()); 
         }
 	}
 }

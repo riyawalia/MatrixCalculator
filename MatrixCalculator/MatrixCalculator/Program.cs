@@ -43,15 +43,15 @@ namespace MatrixCalculator
                         break;
                     case 'A': 
                         file.calculator.Add();
-                        file.WriteResult(" + ");
+                        file.WriteResult('+');
                         break;
                     case 'S':
                         file.calculator.Subract();
-                        file.WriteResult(" - ");
+                        file.WriteResult('+');
                         break;
                     case 'M':
                         file.calculator.Multiply();
-                        file.WriteResult(" * ");
+                        file.WriteResult('*');
                         break;
                     case 'T':
                         // ask User which matrix to transpose 
