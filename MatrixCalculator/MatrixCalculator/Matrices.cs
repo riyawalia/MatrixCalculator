@@ -23,20 +23,20 @@ namespace MatrixCalculator
 			this.rows = rows;
 			this.columns = columns;
 			this.squareMatrix = (rows == columns);
-			// if matrix is being created with known number of rows and columns, 
-			// a function is creating it, and hence it is valid 
+			// if matrix is being created with known number of rows and columns, a function is creating it, and hence it is valid 
 			this.valid = true;
 		}
         public void IsValid()
         {
+            this.valid = true; 
             foreach(List<int> row in this.values) 
             {
                 if (this.columns != row.Count()) 
                 {
-                    this.valid = false; 
+                    this.valid = false;
+                    return; 
                 }
             }
-            this.valid = true; 
         }
 		public void SetValues(string rawMatrix)
 		{
@@ -56,11 +56,11 @@ namespace MatrixCalculator
 		}
         public void Display()
         {
-            Console.WriteLine("Number of rows: {0}\n Number of columns: {1}", this.rows, this.columns); 
+            Console.WriteLine("Number of rows: {0}\nNumber of columns: {1}", this.rows, this.columns); 
             values.ForEach(rows => {
                 rows.ForEach(value =>
                 {
-                    Console.WriteLine("{0}\t", value);
+                    Console.Write("{0}\t", value);
                 });
                 Console.WriteLine("\n");                 
             });
@@ -110,18 +110,18 @@ namespace MatrixCalculator
 			this.rightMatrix.Display();
 
 		}
-		protected bool CannotCombine()
+		private bool CannotCombine()
 		{
 			return
 				this.rightMatrix.rows != this.leftMatrix.rows || this.rightMatrix.columns != this.leftMatrix.columns;
 		}
-		protected bool CannotMultiply()
+		private bool CannotMultiply()
 		{
 			return
 				this.leftMatrix.columns != this.rightMatrix.rows;
 
 		}
-		protected int MultiplyRowColumn(List<int> row, List<int> column)
+		private int MultiplyRowColumn(List<int> row, List<int> column)
 		{
 			int result = 0;
 			for (int i = 0; i < row.Count; ++i)
@@ -134,20 +134,32 @@ namespace MatrixCalculator
         /// Transpose the specified matrix.
         /// </summary>
         /// <returns>The transposed matrix.</returns>
-        /// <param name="leftMatrix">If set to <c>true</c> left matrix is transposed. Else right.</param>
-		public void Transpose(bool leftMatrix)
-		{
-			var matrix = leftMatrix? this.leftMatrix : this.rightMatrix;
-			this.resultMatrix = new Matrix(matrix.columns, matrix.rows);
+		public void Transpose()
+		{;
 
-			for (int i = 0; i < matrix.rows; ++i)
+			this.resultMatrix = new Matrix(this.leftMatrix.columns, this.leftMatrix.rows);
+
+            var tempArray = new int[leftMatrix.columns, leftMatrix.rows]; 
+
+			for (int i = 0; i < this.leftMatrix.rows; ++i)
 			{
-				for (int j = 0; j < matrix.columns; ++j)
+				for (int j = 0; j < this.leftMatrix.columns; ++j)
 				{
-					// every i x j value of transposed matrix is the j x i value of given matrix  
-					this.resultMatrix.values[j][i] = matrix.values[i][j];
+					// every j x i value of transposed matrix is the i x j value of given matrix  
+					tempArray[j, i] = this.leftMatrix.values[i][j];
 				}
 			}
+            // converting the temporary array into a list of list of integers (raw Matrix format)
+            for (int i = 0; i < this.leftMatrix.columns; ++i)
+            {
+                var tempList = new List<int>(); 
+
+                for (int j = 0; j < this.leftMatrix.rows; ++j)
+                {
+                    tempList.Add(tempArray[i, j]); 
+                }
+                this.resultMatrix.values.Add(tempList); 
+            }
 		}
 		public void Add()
 		{
@@ -209,7 +221,7 @@ namespace MatrixCalculator
                 this.resultMatrix.values.Add(currentRow); 
             }
 		}
-        public void Reduce(bool leftMatrix)
+        public void Reduce()
         {
             // row reduce only if it can: handle errors otherwise
             // do stuff

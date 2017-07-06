@@ -9,10 +9,11 @@ namespace MatrixCalculator
 	{
         protected Calculator _calculator; 
         public Calculator calculator { get { return _calculator ?? (_calculator = new Calculator());  } set { _calculator = value;  }}
-        public string fileDirectory; 
-        public string filePath { get; set; }
+
+        private string fileDirectory; 
+        private string filePath { get; set; }
         // file path is saved in app config, user can select which file to use 
-        protected bool EnterFileName()
+        private bool EnterFileName()
         {
 			Console.WriteLine("Enter file name:");
 			string fileName = Console.ReadLine();
@@ -21,13 +22,19 @@ namespace MatrixCalculator
             {
                 return false; 
             }
-            this.filePath = this.fileDirectory + "\\" + fileName;
+            this.filePath = Path.Combine(this.fileDirectory, Path.GetFileName(fileName)); 
             return true; 
 		}
+        private string GetFolderPath()
+        {
+            string solutionPath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory))); 
+            return solutionPath; 
+        }
 		public TextFile()
 		{
-            var rawText = new List<string>(); 
-            this.fileDirectory = ConfigurationManager.AppSettings["fileDirectory"];
+            var rawText = new List<string>();
+            //this.fileDirectory = ConfigurationManager.AppSettings["fileDirectory"];
+            this.fileDirectory = this.GetFolderPath(); 
             string[] matrixSeperator = { "" }; 
             if (!Directory.Exists(fileDirectory))
             {
@@ -48,25 +55,31 @@ namespace MatrixCalculator
                 rawText.Add(line); 
             }
 
-            this.calculator.leftMatrix.SetValues(rawText[0]);
-            this.calculator.rightMatrix.SetValues(rawText[1]); 
+            calculator.leftMatrix.SetValues(rawText[0]);
+            calculator.rightMatrix.SetValues(rawText[2]); 
              
 			// prepare for error if format of text file is unexpected
 		}
 
         public void WriteResult(char operation)
         {
-            StreamWriter resultFile = File.AppendText("..\\Text Files\\result.txt");
+            string resultPath = Path.Combine(this.fileDirectory, Path.GetFileName("result.txt")); 
+            StreamWriter resultFile = File.AppendText(resultPath);
 
-            string resultMessage = "---\n" + this.calculator.leftMatrix.ToString() + '\n' + operation + '\n' + this.calculator.rightMatrix.ToString() + "\n=\n" + this.calculator.resultMatrix.ToString() + '\n'; 
+            string resultMessage = "-----------------------------\n" + 
+                                   calculator.leftMatrix.ToString() + "\n\n" + operation + "\n\n" + calculator.rightMatrix.ToString() + "\n\n=\n\n" + calculator.resultMatrix.ToString() + '\n';
 
             resultFile.WriteLine(resultMessage);
+            resultFile.Close(); 
         }
-        public void WriteResult()
+        public void WriteResult(string operation)
         {
-            StreamWriter resultFile = File.AppendText("..\\Flat Files\\result.txt");
+            string resultPath = Path.Combine(this.fileDirectory, Path.GetFileName("result.txt")); 
+            StreamWriter resultFile = File.AppendText(resultPath);
 
-            resultFile.WriteLine("---\n" + this.calculator.resultMatrix.ToString()); 
+            resultFile.WriteLine("-----------------------------\n" + operation + "\n" +
+                                 calculator.resultMatrix.ToString());
+            resultFile.Close(); 
         }
 	}
 }
